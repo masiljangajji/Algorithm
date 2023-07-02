@@ -11,11 +11,11 @@ public class Main {
     static int n;
     static boolean []visit = new boolean[10];
 
-    public static void permu(List<Integer>v){
+    public static void permu(int depth,int [] v){
 
-        if(v.size()==n){
-            for(Integer a:v)
-                System.out.print(a+" ");
+        if(depth==n){
+            for(int i=0;i<n;i++)
+                System.out.print(v[i]+" ");
             System.out.println();
             return;
         }
@@ -23,9 +23,8 @@ public class Main {
         for(int i=1;i<=n;i++){
             if(visit[i]==false){
                 visit[i]=true;
-                v.add(i);
-                permu(v);
-                v.remove(v.size()-1);
+                v[depth]=i;
+                permu(depth+1,v);
                 visit[i]=false;
             }
         }
@@ -39,8 +38,8 @@ public class Main {
 
         n=sc.nextInt();
 
-        List<Integer>v = new ArrayList<>();
-        permu(v);
+        int [] v= new int[10];
+        permu(0,v);
 
     }
 }
