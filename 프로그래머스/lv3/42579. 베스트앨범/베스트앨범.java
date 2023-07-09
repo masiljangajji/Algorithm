@@ -56,7 +56,6 @@ class Solution {
 
         for(Map.Entry<String,Integer>a:m.entrySet()){
             m2.put(a.getValue(),a.getKey());
-            System.out.println(a.getValue());
         }
 
         List<Integer>arr = new ArrayList<>();
