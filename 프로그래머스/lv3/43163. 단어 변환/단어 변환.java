@@ -22,7 +22,6 @@ class Solution {
     public  void dfs(String str,String target, String[]words,int cnt) {
 
         if(str.equals(target)) {
-            System.out.println("이제 같네요" +cnt);
             Min=Math.min(Min,cnt);
         }
 
@@ -50,14 +49,12 @@ class Solution {
             Arrays.fill(visit,false);
             if(go(begin,words,i)==true){
                 visit[i]=true;
-                System.out.println(words[i]+" "+i+" 아라");
                 dfs(words[i], target,words,1);
             }
             System.out.println(Min);
         }
 
-        System.out.println(Min+" 이거랍니다\n");
-        
+    
         if(Min==123456789)
             return 0;
         else
