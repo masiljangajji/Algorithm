@@ -6,17 +6,23 @@ bool solution(string s)
 {
     bool answer = true;
 
-    int cnt1=0;
-    int cnt2=0;
+    // p,y 개수 같으면 true 아니면 false    py하나도 없으면 항상 true 
     
-    for(auto a:s){
-        if(a=='p'||a=='P'){
-            cnt1++;
-        }
-        else if(a=='y'||a=='Y'){
-            cnt2++;
-        }
+    int p_cnt=0;
+    int y_cnt=0;
+    
+    for(int i=0;i<s.size();i++){
+        if(s[i]=='p'||s[i]=='P')
+            p_cnt++;
+        if(s[i]=='y'||s[i]=='Y')
+            y_cnt++;
     }
-
-    return cnt1==cnt2;
+    
+    if(p_cnt==0&&y_cnt==0)
+        return true;
+    else if(p_cnt==y_cnt)
+        return true;
+    else
+        return false;
+    
 }
