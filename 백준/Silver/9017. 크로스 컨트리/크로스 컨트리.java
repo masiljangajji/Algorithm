@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.lang.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,21 +48,14 @@ public class Main {
                 int num = list.get(i);
 
                 if (cnt[num] == 6) {
-
-                    if (m.containsKey(num)) {
-                        Rank r = m.get(num);
-                        r.add(rank);
-                        m.put(num, r);
-                    } else {
-                        m.put(num, new Rank(num, rank));
-                    }
+                    m.computeIfAbsent(num, integer -> new Rank(num)).add(rank);
                     rank++;
                 }
 
             }
 
             System.out.println(
-                    m.values().stream().filter(rank1 -> rank1.isValidate())
+                    m.values().stream().filter(Rank::isValidate)
                             .sorted((o1, o2) -> {
                                 if (o1.getTotal() == o2.getTotal()) {
                                     return o1.getFive() - o2.getFive();
@@ -84,9 +78,8 @@ class Rank {
     int team;
     List<Integer> scores = new ArrayList<>();
 
-    public Rank(int team, int score) {
+    public Rank(int team) {
         this.team = team;
-        this.scores.add(score);
     }
 
     public void add(int score) {
