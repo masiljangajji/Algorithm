@@ -29,42 +29,31 @@ public class Main {
         }
 
         int[] prices = new int[n];
+        int[] decreasePrices = new int[n];
 
         for (int i = 0; i < n; i++) {
             prices[i] = sc.nextInt();
         }
-        // 각 도시의 기름 비용을 알면 됨, 지금이 가장 싸면 다 채우고
-        // 2번째로 싸면, 1번째로 싼 곳 나오기 전까지 충전하고, 나머지는 1번쨰로 싼 곳으로 가는거
 
-        int current = 0;
-        int next = 0;
-        int totalPrice = 0;
-        int i = 0;
-        prices[n - 1] = 123456789;
+        decreasePrices[0] = prices[0];
+        int prev = prices[0];
 
-        while (current < cities.length) {
-            next = current + 1;
+        for (int i = 1; i < n; i++) {
 
-            // System.out.println(current + " " + i + " " + totalPrice);
-
-            if (prices[current] >= prices[next]) { // 다음 도시가 더 싸거나 같으면 최소한으로
-                totalPrice += prices[current] * cities[i];
-                current++;
-                i++;
-                continue;
+            if (prev < prices[i]) {
+                decreasePrices[i] = prev;
+            } else {
+                prev = prices[i];
+                decreasePrices[i] = prev;
             }
-
-            // 다음 도시가 더 비싸면 지금 도시에 다다음 도시까지 충전
-            while (next < n && prices[current] < prices[next]) {
-                totalPrice += prices[current] * cities[i];
-                i++;
-                next++;
-            }
-            current = next;
 
         }
 
-        //System.out.println(current + " " + i + " " + totalPrice);
+        long totalPrice = 0;
+        for (int i = 0; i < n - 1; i++) {
+            totalPrice += (long) decreasePrices[i] * cities[i];
+        }
+
         System.out.println(totalPrice);
 
     }
