@@ -43,25 +43,33 @@ public class Main {
             ranks[i] = new Rank(sc.nextInt(), sc.nextInt(), sc.nextInt(), sc.nextInt());
         }
 
+
         Arrays.sort(ranks);
 
+//        for (Rank r : ranks) {
+//            System.out.println(r);
+//        }
 
         int cnt = 1;
         Rank currentRank = ranks[0];
 
+        if (currentRank.countryNumber == k) {
+            System.out.println(1);
+            return;
+        }
+
         for (int i = 1; i < n; i++) {
 
-            if (i == k) {
-                break;
-            }
-
-            // k 번째 국가의 등수
-            if (currentRank.gotTotalMedalCount() != ranks[i].gotTotalMedalCount()) { // 등수 변화 있어야 함
-                cnt++;
+            if (!currentRank.hasSameMedals(ranks[i])) {
+                cnt++; // 등수 업
             }
 
             currentRank = ranks[i];
-            // 여기는 공동 등수임
+
+            if (k == ranks[i].countryNumber) {
+                break;
+            }
+
         }
 
         System.out.println(cnt);
@@ -84,10 +92,11 @@ class Rank implements Comparable<Rank> {
         this.bronze = bronze;
     }
 
-    public int gotTotalMedalCount() {
-        return gold + silver + bronze;
+    public boolean hasSameMedals(Rank other) {
+        return this.gold == other.gold &&
+                this.silver == other.silver &&
+                this.bronze == other.bronze;
     }
-
 
     @Override
     public int compareTo(Rank o) {
@@ -105,4 +114,10 @@ class Rank implements Comparable<Rank> {
 
 
     }
+
+    @Override
+    public String toString() {
+        return countryNumber + "\t" + gold + "\t" + silver + "\t" + bronze;
+    }
+
 }
