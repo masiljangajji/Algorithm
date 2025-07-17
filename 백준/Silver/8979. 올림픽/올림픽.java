@@ -51,28 +51,24 @@ public class Main {
 //        }
 
         int cnt = 1;
-        Rank currentRank = ranks[0];
+        for (int i = 0; i < n; i++) {
 
-        if (currentRank.countryNumber == k) {
-            System.out.println(1);
-            return;
-        }
+            if (ranks[i].countryNumber == k) { // 이 앞에있는 나라
 
-        for (int i = 1; i < n; i++) {
+                for (int j = i - 1; j >= 0; j--) {
 
-            if (!currentRank.hasSameMedals(ranks[i])) {
-                cnt++; // 등수 업
-            }
+                    // 같은 등수 아닌거 전부 체크
+                    if (!ranks[j].hasSameMedals(ranks[i])) {
+                        cnt++;
+                    }
+                }
 
-            currentRank = ranks[i];
+                System.out.println(cnt);
+                return;
 
-            if (k == ranks[i].countryNumber) {
-                break;
             }
 
         }
-
-        System.out.println(cnt);
 
 
     }
