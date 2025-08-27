@@ -1,0 +1,139 @@
+name: Daily Algorithm Issue (cross repo)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  daily-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or update today's issue in self-study (and close previous)
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.SELF_STUDY_TOKEN }}
+          script: |
+            // ===== Config =====
+            const sourceOwner   = context.repo.owner;              // ex) 'Masiljangajji'
+            const sourceRepo    = context.repo.repo;               // ex) 'Algorithm'
+            const targetOwner   = sourceOwner;                     
+            const targetRepo    = 'self-study';                     // <-- 이슈를 생성할 타깃 리포
+            const dailyLabel    = 'algorithm-daily';                // 구분용 라벨(선택)
+
+            // ===== Helpers =====
+            function kstDateString(d = new Date()) {
+              const fmt = (opt) => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', ...opt }).format(d);
+              const y = fmt({ year: 'numeric' });
+              const m = fmt({ month: '2-digit' });
+              const day = fmt({ day: '2-digit' });
+              return ${y}-${m}-${day};
+            }
+
+            const { repository, commits, pusher } = context.payload;
+
+            if (!commits || commits.length === 0) {
+              core.info('No commits in payload — skip.');
+              return;
+            }
+
+            // 소스(Algorithm) 커밋 HTML URL
+            const sourceHtml = repository.html_url; // https://github.com/Masiljangajji/Algorithm
+
+            const todayStr   = kstDateString();
+            const issueTitle = 🧩 알고리즘 문제 풀이 - ${todayStr};
+
+            // 1) 타깃 리포의 열린 이슈 목록
+            const openIssues = await github.paginate(
+              github.rest.issues.listForRepo,
+              { owner: targetOwner, repo: targetRepo, state: 'open', per_page: 100 }
+            );
+
+            // 2) 오늘 이슈 외 'algorithm-daily' 라벨이 붙은 이슈는 모두 close
+            for (const iss of openIssues) {
+              const hasDaily = (iss.labels || []).some(l => (typeof l === 'string' ? l === dailyLabel : l.name === dailyLabel));
+              if (hasDaily && iss.title !== issueTitle) {
+                await github.rest.issues.update({
+                  owner: targetOwner, repo: targetRepo, issue_number: iss.number, state: 'closed'
+                });
+                core.info(Closed previous daily issue #${iss.number}: ${iss.title});
+              }
+            }
+
+            // 3) 오늘 이슈 찾기 (열린 것부터)
+            let todaysIssue = openIssues.find(i => i.title === issueTitle);
+
+            // 닫힌 동일 제목이 있으면 재오픈(예외 케이스 방어)
+            if (!todaysIssue) {
+              const closedIssues = await github.paginate(
+                github.rest.issues.listForRepo,
+                { owner: targetOwner, repo: targetRepo, state: 'closed', per_page: 100 }
+              );
+              const todaysClosed = closedIssues.find(i => i.title === issueTitle);
+              if (todaysClosed) {
+                await github.rest.issues.update({
+                  owner: targetOwner, repo: targetRepo, issue_number: todaysClosed.number, state: 'open'
+                });
+                todaysIssue = (await github.rest.issues.get({
+                  owner: targetOwner, repo: targetRepo, issue_number: todaysClosed.number
+                })).data;
+                core.info(Re-opened today's issue #${todaysIssue.number});
+              }
+            }
+
+            // 4) 오늘 이슈 없으면 새로 생성
+            if (!todaysIssue) {
+              const body = [
+                ## ${issueTitle},
+                ,
+                - 작성자: **${pusher?.name || 'unknown'}**,
+                - 생성 시각 (KST): ${kstDateString(new Date())},
+                ,
+                > 하루 동안의 문제 풀이 커밋이 이 이슈에 **댓글로 누적**됩니다.,
+                > 소스 리포: \${sourceOwner}/${sourceRepo}\
+              ].join('\n');
+
+              const created = await github.rest.issues.create({
+                owner: targetOwner,
+                repo: targetRepo,
+                title: issueTitle,
+                body,
+                labels: [dailyLabel] // 필요없으면 제거
+              });
+              todaysIssue = created.data;
+              core.info(Created today's issue #${todaysIssue.number} in ${targetOwner}/${targetRepo});
+            }
+
+            // 5) 이번 push의 커밋들을 targetRepo 이슈에 댓글로 추가
+            const nowKST = kstDateString(new Date());
+            const lines = [];
+            lines.push(### 🔗 Push (KST: ${nowKST}) — from \${sourceOwner}/${sourceRepo}\);
+            lines.push('');
+
+            for (const c of commits) {
+              const shortSha  = c.id.substring(0, 8);
+              const commitUrl = ${sourceHtml}/commit/${c.id};
+              const firstLine = (c.message || '').split(/\r?\n/)[0];
+              lines.push(- [\${shortSha}\](${commitUrl}) ${firstLine});
+            }
+
+            lines.push('');
+            lines.push('<details><summary>📝 Full Commit Messages</summary>');
+            lines.push('');
+            for (const c of commits) {
+              const commitUrl = ${sourceHtml}/commit/${c.id};
+              lines.push(**Commit:** ${commitUrl});
+              lines.push('');
+              lines.push(c.message || '');
+              lines.push('');
+            }
+            lines.push('</details>');
+
+            await github.rest.issues.createComment({
+              owner: targetOwner,
+              repo: targetRepo,
+              issue_number: todaysIssue.number,
+              body: lines.join('\n')
+            });
+
+            core.info(Updated issue #${todaysIssue.number} in ${targetOwner}/${targetRepo}: ${issueTitle});
