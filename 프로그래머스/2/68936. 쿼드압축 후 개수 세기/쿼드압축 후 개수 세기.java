@@ -1,51 +1,39 @@
 import java.util.*;
-import java.lang.*;
 
 class Solution {
     
-    int [] cnt = new int[2];
-    int[] answer = new int[2];
-    
+    private static int zero=0;
+    private static int one=0;
     
     public int[] solution(int[][] arr) {
         
-        // 압축하고자 하는 영역 S 
+        dfs(arr,0,0,arr.length);
+        return new int[]{zero,one};
         
-        // S 내부에 있는 모든 수가 같으면 하나로 압축 
-        
-        // 그렇지 않으면 S를 4개의 정사각형으로 쪼갬 
-        
-        int size = arr.length;
-        
-        dfs(0,size,0,size,size/2,arr);
-        
-        return answer;
     }
     
-    void dfs(int startX,int endX,int startY,int endY,int half,int[][]arr){
-                    
-        int num = arr[startY][startX];
-        boolean flag = false;
+    public void dfs(int[][]arr,int y,int x,int size){
         
-        for(int i=startY;i<endY;i++){
-            for(int j=startX;j<endX;j++){
+        int num = arr[y][x];
+        
+        for(int i=y;i<y+size;i++){
+            for(int j=x;j<x+size;j++){
                 if(num!=arr[i][j]){
-                    flag=true;
-                    break;
-                }
+                    dfs(arr,y,x,size/2);
+                    dfs(arr,y,x+size/2,size/2);
+                    dfs(arr,y+size/2,x,size/2);
+                    dfs(arr,y+size/2,x+size/2,size/2);
+                    return;
+                }        
             }
-            
-            if(flag){
-                dfs(startX,endX-half,startY,endY-half,half/2,arr);
-                dfs(startX+half,endX,startY,endY-half,half/2,arr);
-                dfs(startX,endX-half,endY-half,endY,half/2,arr);
-                dfs(startX+half,endX,endY-half,endY,half/2,arr);         
-                return;
-            }
-        }        
+        }
         
-        answer[num]++;
+        if(num==1)
+            one+=1;
+        else
+            zero+=1;
         
     }
+
     
 }
