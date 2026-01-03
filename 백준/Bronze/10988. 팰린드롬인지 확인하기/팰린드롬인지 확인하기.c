@@ -7,7 +7,7 @@ int main(void) {
     scanf("%s", s);
 
     int i = 0;
-    int j = (int) strlen(s) - 1;
+    int j = strlen(s) - 1;
 
     while (i < j) {
         if (s[i] != s[j]) {
