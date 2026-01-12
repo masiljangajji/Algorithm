@@ -1,24 +1,23 @@
 class Solution {
-    
     public int solution(int[] numbers, int target) {
-        
-        int answer = 0;
-        return dp(0,target,numbers,0);
+        return dp(numbers,numbers[0],0,target,0)+dp(numbers,numbers[0]*-1,0,target,0);
     }
     
-    public int dp(int start,int target,int[]numbers,int result){
+    private int dp(int[]numbers,int number,int depth,int target,int sum){
+                
+        sum +=number;
         
-        if(start==numbers.length){
-            if(result==target)
+        if(depth==numbers.length-1){   
+            if(sum==target)
                 return 1;
-            return 0;
+            else
+                return 0;
         }
         
-        int cnt=0;
+        depth++;
         
-        cnt+=dp(start+1,target,numbers,result+numbers[start]);
-        cnt+=dp(start+1,target,numbers,result+(numbers[start]*-1));
-        return cnt;
+        return dp(numbers,numbers[depth],depth,target,sum) 
+            + dp(numbers,numbers[depth]*-1,depth,target,sum);
     }
     
 }
