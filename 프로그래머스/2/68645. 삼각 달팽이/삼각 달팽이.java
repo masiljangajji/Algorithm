@@ -1,85 +1,77 @@
-import java.util.*;
-import java.lang.*;
-
 class Solution {
+    
+    private static final int[][]arr= new int[1001][1001];
+    
+    private static int cnt=1;
     
     public int[] solution(int n) {
         
+        generate(n);
+        int[] answer = new int[cnt-1];
         
-        int cnt = 1;
-        int number = n;
+        int num=0;
         
-    
-        int [][] arr= new int[n][n];
-                
-        int col = 0;
-        int row = 0;
-        int count =0;
-        
-        while(true){
-            
-            for(int i=0;i<n;i++){
-                arr[col++][row] = cnt++;
-            }
-                        
-            row++;
-            col--;
-            n--;
-            
-            if(n==0){
-                break;
-            }
-            
-            for(int i=0;i<n;i++){
-                arr[col][row++] = cnt++;
-            }
-
-            row--;
-            n--;
-            
-            if(n==0){
-                break;
-            }
-            
-            for(int i=0;i<n;i++){
-                arr[--col][--row] = cnt++;
-            }   
-            col++;
-            n--;
-            
-            if(n==0){
-                break;
-            }
-        
-        }
-        
-        int []answer = new int[cnt-1];
-        
-        int idx = 0;
-        
-        for(int i=0;i<arr.length;i++){
-            for(int j=0;j<arr[i].length;j++){
-                if(arr[i][j]!=0){
-                    answer[idx++] = arr[i][j];
-                }else
-                    break;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                if(arr[i][j]!=0)
+                    answer[num++] = arr[i][j];
             }
         }
         
         return answer;
     }
     
-    public void prt(int[][]arr){
+    public void generate(int n){
         
-        System.out.println("Start");
-
+        int dir = 0;
+        var p = new Pair(-1,0);
         
-        for(int i=0;i<arr.length;i++){
-            for(int j=0;j<arr[i].length;j++){
-                System.out.printf("%3d ",arr[i][j]);
-            }
-            System.out.println();
+        while(n>0){
+            
+            if(dir==0)
+                down(n,p);
+            
+            if(dir==1)
+                right(n,p);
+                
+            if(dir==2)
+                rightUp(n,p);
+            
+            dir++;
+            dir%=3;
+            n--;
         }
+        
+    }
+    
+    private void down(int n,Pair p){
+        
+        for(int i=0;i<n;i++){
+            arr[++p.y][p.x] = cnt++;
+        }
+    }
+    
+    private void right(int n,Pair p){
+        for(int i=0;i<n;i++){
+            arr[p.y][++p.x] = cnt++;
+        }
+    }
+    
+    private void rightUp(int n,Pair p){
+        for(int i=0;i<n;i++){
+            arr[--p.y][--p.x] = cnt++;
+        }
+    }   
+}
+
+class Pair{
+    
+    public int y;
+    public int x;
+    
+    public Pair(int y,int x){
+        this.y=y;
+        this.x=x;
     }
     
 }
