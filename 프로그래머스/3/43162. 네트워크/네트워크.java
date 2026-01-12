@@ -1,34 +1,36 @@
 class Solution {
     
-    private boolean[]visited= new boolean[201];
+    private static final boolean[]visited = new boolean[201];
     
     public int solution(int n, int[][] computers) {
-        int answer = 0;
+        int cnt=0;
         
-        // 입력 200개 
         for(int i=0;i<n;i++){
-            answer +=dfs(i,computers);
+           if(!visited[i]){
+               dfs(computers,i);
+               cnt++;
+           }
         }
-        return answer;
+        return cnt;
     }
     
-    private int dfs(int start,int [][]computers){
-        // 1번 컴퓨터에서 갈 수 있는 모든 경로를 체크 하겠다 
+    private void dfs(int [][]computers,int current){
+
+        visited[current] = true;
         
-        if(visited[start])
-            return 0;
-        visited[start] = true;
-        
-        for(int j=0;j<computers[start].length;j++){
-            if(start==j)
-                continue;                
+        for(int next=0;next<computers[current].length;next++){
             
-            if(computers[start][j]==0)
+            if(next==current)
+                continue;
+            if(computers[current][next]==0)
+                continue;
+            if(visited[next])
                 continue;
             
-            dfs(j,computers);
+            dfs(computers,next);
         }
-        return 1;
     }
+    
+    
     
 }
