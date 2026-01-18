@@ -10,7 +10,7 @@ class Solution {
             int original = Integer.parseInt(v1+v2);
             int reverse = Integer.parseInt(v2+v1);
             return reverse - original;
-        }).collect(Collectors.joining(""))
+        }).collect(Collectors.joining())
             .replaceAll("^0+","0");
  
     }
