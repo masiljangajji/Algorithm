@@ -3,33 +3,37 @@ class Solution {
         
         StringBuilder sb = new StringBuilder();
         
-        for(int i=0;i<s.length();i++){
-            sb.append(encrypt(s.charAt(i),n));
+        for(char ch : s.toCharArray()){
+            sb.append(encrypt(ch,n));
         }
-
         
         return sb.toString();
     }
     
-    public char encrypt(char ch,int n){
+    private char encrypt(char ch,int n){
+            
+        char flag;
+        char reset;
         
-        int num = ch+n;
-        
-        if(Character.isLowerCase(ch)){
-            if(num>122){
-                num%=123;
-                num +='a';
-            }
-            return (char)num;
-        }else if(Character.isUpperCase(ch)){
-            if(num>90){
-                num %=91;
-                num+='A';
-            }   
-            return (char)num;
+        if(!Character.isAlphabetic(ch)){
+            return ch;
         }
-
-        return ' ';
+        else if('a'<=ch && ch<='z'){
+            flag='z';
+            reset='a';
+        }else{
+            flag='Z';
+            reset='A';
+        }
+        
+        for(int i=0;i<n;i++){
+            if(ch==flag){
+                ch=reset;
+                continue;
+            }
+            ch++;   
+        }
+        return ch;
     }
     
 }
