@@ -2,54 +2,58 @@ import java.util.*;
 
 class Solution {
     public int solution(String s) {
-        int answer = 123456789;
+        int answer = 0;
+
+        int len = s.length();
+        int min = len;
         
-        for(int i=1;i<=s.length();i++){
-                        
-            int cnt = encapsulate(s,i);
-            answer = Math.min(cnt,answer);
+        for(int i=1;i<=len/2;i++){
+            min = Math.min(min,convert(s,i,len,s.substring(0,i)));
         }
         
-        return answer;
+        return min;
     }
     
-    public int encapsulate(String s,int n){
-                
-        Queue<String>q = new LinkedList<>();
+    private int convert(String s,int n,int len,String current){
         
-        int i = 0;
+        int i=n;
+        int cnt=1;
         
-        while(i+n<s.length()){
-            q.offer(s.substring(i,i+n));    
+        String str="";
+        
+        StringBuilder sb= new StringBuilder();
+        boolean flag = true;
+        
+        while(flag){
+            
+            if(i+n>=len){
+                str = s.substring(i);
+                flag=false;
+            }
+            else
+                str = s.substring(i,i+n);
+                        
+            if(str.equals(current))
+                cnt++;
+            else {
+                if(cnt>1){
+                    sb.append(cnt);
+                    cnt=1;
+                }
+                sb.append(current);
+            }
+            current = str;
             i+=n;
         }
         
-        if(s.length()-i>0){
-            q.offer(s.substring(i));
+        
+        if(cnt>1){
+            sb.append(cnt);
         }
         
-        
-        int cnt=1;
-        StringBuilder sb = new StringBuilder();
-        
-        while(!q.isEmpty()){
-            
-            String str = q.poll();
-            
-            if(str.equals(q.peek())){
-                cnt++;
-            }else{
+        sb.append(str);
                 
-                if(cnt>1)
-                    sb.append(cnt).append(str);    
-                else
-                    sb.append(str);    
-
-                cnt=1;
-            }
-        }
-        
-        return sb.length();
+        return sb.toString().length();
     }
     
 }
