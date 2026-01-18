@@ -1,34 +1,36 @@
 import java.util.*;
+
 class Solution {
     public int solution(int[] citations) {
-
-        // n편 중, h 번 이상 인용된 논문이 H 편 이상 
-        // 나머지 논문이 H 번 이하로 인용됐을때 최대 값 
+        int answer = 0;
         
+        // h번 이상 인용된게 h편 
+        // 나머지가 H번 이하 인용 
+        // n-h 는 h보다 작아야 함 
+        
+        int n = citations.length;
         Arrays.sort(citations);
         
-        int answer=0;
-        
-        for(int i=0;i<citations[citations.length-1];i++){
-            
-            // idx 부터 i번 이상 인용된 논문
-            int idx = getIndex(citations,i);
-            if(i<=citations.length-idx)
-                answer=i;
-            
+        for(int i=citations[n-1];i>=0;i--){
+            if(check(citations,i))
+                return i;
         }
-        
-        return answer;
+        return 0;
     }
     
-    private int getIndex(int[]citations,int h){
+    private boolean check(int[]arr,int h){
         
-        int current = 0;
-        for(int i=0;i<citations.length;i++){
-            if(citations[i]>=h)
-                return current;
-            current++;
+        int cnt=0;
+        int len = arr.length;
+        
+        for(int i=0;i<len;i++){
+            if(arr[i]>=h){
+                // 0 1 3 5 6 
+                // len-i; // h번 이상 인용
+                // i+1 // h번 이하 인용 
+                return len-i>=h&&i<=h;
+            }
         }
-        return current;
+        return false;
     }
 }
