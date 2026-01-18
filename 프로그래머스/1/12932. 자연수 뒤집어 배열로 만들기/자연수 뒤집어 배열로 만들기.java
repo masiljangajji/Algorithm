@@ -1,20 +1,10 @@
+import java.util.*;
 class Solution {
     public int[] solution(long n) {
+        String reversed = new StringBuilder(String.valueOf(n)).reverse().toString();
         
-        String number = String.valueOf(n);
-        
-        StringBuilder sb = new StringBuilder(number);
-            
-        sb.reverse();
-        
-        String reversedNumber = sb.toString();
-        
-        int[] answer = new int[reversedNumber.length()];
-        
-        for(int i=0;i<reversedNumber.length();i++){
-            answer[i] = reversedNumber.charAt(i)-'0';
-        }
-        
-        return answer;
+        return reversed.chars()  // String → IntStream
+                       .map(c -> c - '0')  // 문자 → 숫자
+                       .toArray();
     }
 }
