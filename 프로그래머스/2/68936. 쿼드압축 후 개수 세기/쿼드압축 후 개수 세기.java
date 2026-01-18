@@ -1,39 +1,43 @@
-import java.util.*;
-
 class Solution {
     
-    private static int zero=0;
     private static int one=0;
+    private static int zero=0;
     
     public int[] solution(int[][] arr) {
         
-        dfs(arr,0,0,arr.length);
-        return new int[]{zero,one};
+        check(arr,0,0,arr.length);
         
+        return new int[]{zero,one};
     }
     
-    public void dfs(int[][]arr,int y,int x,int size){
+    private void check(int [][]arr,int X,int Y,int SIZE){
         
-        int num = arr[y][x];
+        int num = arr[Y][X];
         
-        for(int i=y;i<y+size;i++){
-            for(int j=x;j<x+size;j++){
-                if(num!=arr[i][j]){
-                    dfs(arr,y,x,size/2);
-                    dfs(arr,y,x+size/2,size/2);
-                    dfs(arr,y+size/2,x,size/2);
-                    dfs(arr,y+size/2,x+size/2,size/2);
+        boolean flag = true;
+        
+        
+        for(int i=Y;i<Y+SIZE;i++){
+            for(int j=X;j<X+SIZE;j++){
+                if(arr[i][j]!=num){
+                    flag = false;
+                    SIZE /=2;
+                    check(arr,X,Y,SIZE);
+                    check(arr,X,Y+SIZE,SIZE);
+                    check(arr,X+SIZE,Y,SIZE);
+                    check(arr,X+SIZE,Y+SIZE,SIZE);
                     return;
-                }        
+                }
             }
         }
         
-        if(num==1)
-            one+=1;
-        else
-            zero+=1;
+        if(flag){
+            if(num==0)
+                zero++;
+            else
+                one++;
+        }
         
     }
-
     
 }
